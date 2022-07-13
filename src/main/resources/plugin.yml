@@ -1,0 +1,18 @@
+name: Breadcrumbs
+version: '${project.version}'
+main: logan.breadcrumbs.BreadcrumbsPlugin
+api-version: 1.19
+prefix: Breadcrumbs
+authors: [ escape9719 ]
+description: Leaves a trail of particles behind the player to help them navigate back to where they were.
+permissions:
+  breadcrumbs.*:
+    description: Access all plugin capabilities and commands.
+  breadcrumbs.use:
+    description: Allows toggling of breadcrumbs.
+    default: true
+commands:
+  breadcrumbs:
+    description: Enable breadcrumbs.
+    permission: breadcrumbs.use
+    aliases: bc
