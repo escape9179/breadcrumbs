@@ -1,0 +1,21 @@
+#  ____                     _                           _
+# |  _ \                   | |                         | |
+# | |_) |_ __ ___  __ _  __| | ___ _ __ _   _ _ __ ___ | |__  ___
+# |  _ <| '__/ _ \/ _` |/ _` |/ __| '__| | | | '_ ` _ \| '_ \/ __|
+# | |_) | | |  __/ (_| | (_| | (__| |  | |_| | | | | | | |_) \__ \
+# |____/|_|  \___|\__,_|\__,_|\___|_|   \__,_|_| |_| |_|_.__/|___/
+
+breadcrumbs:
+  # The color of the breadcrumbs.
+  # This is an RGB value.
+  color: 255,182,67
+
+  # The size of the particles.
+  # Normal size is 1.0.
+  # Anything less make the particles smaller.
+  size: 1.0
+
+  # The number of particles to spawn per placement of breadcrumbs.
+  # Keep this number small to minimize client-side lag when many
+  # breadcrumbs are rendered on the screen at once.
+  count: 3

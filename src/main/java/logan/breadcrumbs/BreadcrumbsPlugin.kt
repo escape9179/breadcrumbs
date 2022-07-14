@@ -10,9 +10,14 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
+import java.io.IOException
+import java.nio.file.Files
 
 const val maxParticleCount = 1000
 const val particleViewDistance = 32
+
+const val dataFolderPath = "plugins/Breadcrumbs"
+const val configPath = "$dataFolderPath/config.yml"
 
 class BreadcrumbsPlugin : JavaPlugin() {
 
@@ -22,26 +27,32 @@ class BreadcrumbsPlugin : JavaPlugin() {
         val pluginId = 15747
         Metrics(this, pluginId)
 
+        dataFolder.mkdirs()
 
+        try {
+            Files.copy(getResource("/config.yml")!!, dataFolder.toPath())
+        } catch (e: IOException) {
+
+        }
 
         Bukkit.getScheduler().runTaskTimer(this, Runnable {
             playerParticleMap.forEach { (player, locations) ->
                 if (!player.isOnline) return@forEach
                 if (locations.isNotEmpty()) {
-                    var add = true
-
-                    locations.forEach inner@ {
-                        if (it.toBlockLocation() == player.location.toBlockLocation()) {
-                            add = false
-                            return@inner
-                        }
+                    if (!locations.any { it.toBlockLocation() == player.location.toBlockLocation() }) {
+                        locations.add(player.location)
                     }
-                    if (add) locations.add(player.location)
                     if (locations.size >= maxParticleCount)
                         locations.removeFirst()
                     locations.forEach { location ->
-                        if (player.location.distance(location) <= particleViewDistance)
-                            player.spawnParticle(Particle.REDSTONE, location, 3, Particle.DustOptions(Color.fromRGB(255, 182, 67), 1.0f))
+                        if (player.location.distance(location) <= particleViewDistance) {
+                            player.spawnParticle(
+                                Particle.REDSTONE,
+                                location,
+                                Config.getCount(),
+                                Particle.DustOptions(Config.getColor(), Config.getSize())
+                            )
+                        }
                     }
                 }
             }
