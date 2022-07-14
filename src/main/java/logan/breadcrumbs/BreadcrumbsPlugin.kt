@@ -19,10 +19,14 @@ class BreadcrumbsPlugin : JavaPlugin() {
     private val playerParticleMap = mutableMapOf<Player, MutableList<Location>>()
 
     override fun onEnable() {
-        val pluginId = 15747 // <-- Replace with the id of your plugin!
+        val pluginId = 15747
         Metrics(this, pluginId)
+
+
+
         Bukkit.getScheduler().runTaskTimer(this, Runnable {
             playerParticleMap.forEach { (player, locations) ->
+                if (!player.isOnline) return@forEach
                 if (locations.isNotEmpty()) {
                     var add = true
 
@@ -37,7 +41,7 @@ class BreadcrumbsPlugin : JavaPlugin() {
                         locations.removeFirst()
                     locations.forEach { location ->
                         if (player.location.distance(location) <= particleViewDistance)
-                            player.spawnParticle(Particle.REDSTONE, location, 3, Particle.DustOptions(Color.BLUE, 1.0f))
+                            player.spawnParticle(Particle.REDSTONE, location, 3, Particle.DustOptions(Color.fromRGB(255, 182, 67), 1.0f))
                     }
                 }
             }
