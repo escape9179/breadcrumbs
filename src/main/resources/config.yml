@@ -19,3 +19,23 @@ breadcrumbs:
   # Keep this number small to minimize client-side lag when many
   # breadcrumbs are rendered on the screen at once.
   count: 3
+
+  # The amount of time in seconds before a breadcrumb disappears.
+  # 3600 = 1 hour.
+  duration: 3600
+
+  # How often to emit new particles for placed breadcrumbs (in ticks).
+  # 20 = 1 second, 10 = 1/2 a second.
+  # Setting this value to 5 or less could cause client-side lag.
+  emission-frequency: 10
+
+  # How frequently to place new breadcrumbs when the player
+  # is moving.
+  place-frequency: 10
+
+  # The distance in blocks to render breadcrumbs in.
+  # 32 blocks = 2 chunks.
+  view-distance: 32
+
+
+

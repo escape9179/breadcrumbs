@@ -1,27 +1,25 @@
 package logan.breadcrumbs
 
 import logan.api.bstats.Metrics
-import logan.api.util.sendMessage
+import logan.api.command.CommandDispatcher
+import logan.api.util.blockLocation
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
-import org.bukkit.Color
-import org.bukkit.Location
-import org.bukkit.Particle
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.IOException
 import java.nio.file.Files
-
-const val maxParticleCount = 1000
-const val particleViewDistance = 32
+import java.nio.file.Paths
 
 const val dataFolderPath = "plugins/Breadcrumbs"
 const val configPath = "$dataFolderPath/config.yml"
+val breadcrumbsColorDark = TextColor.color(255, 182, 67)
+val breadcrumbsColorLight = TextColor.color(255, 218, 54)
+val playersWithBreadcrumbs = mutableMapOf<Player, MutableList<BreadcrumbParticle>>()
 
-class BreadcrumbsPlugin : JavaPlugin() {
-
-    private val playerParticleMap = mutableMapOf<Player, MutableList<Location>>()
+object BreadcrumbsPlugin : JavaPlugin() {
 
     override fun onEnable() {
         val pluginId = 15747
@@ -30,33 +28,23 @@ class BreadcrumbsPlugin : JavaPlugin() {
         dataFolder.mkdirs()
 
         try {
-            Files.copy(getResource("/config.yml")!!, dataFolder.toPath())
+            Files.copy(javaClass.getResourceAsStream("/config.yml")!!, Paths.get(configPath))
         } catch (e: IOException) {
 
         }
 
+        CommandDispatcher.registerCommand(BreadcrumbsCommand())
+        CommandDispatcher.registerCommand(ToggleCommand())
+        CommandDispatcher.registerCommand(ReloadCommand())
+
         Bukkit.getScheduler().runTaskTimer(this, Runnable {
-            playerParticleMap.forEach { (player, locations) ->
-                if (!player.isOnline) return@forEach
-                if (locations.isNotEmpty()) {
-                    if (!locations.any { it.toBlockLocation() == player.location.toBlockLocation() }) {
-                        locations.add(player.location)
-                    }
-                    if (locations.size >= maxParticleCount)
-                        locations.removeFirst()
-                    locations.forEach { location ->
-                        if (player.location.distance(location) <= particleViewDistance) {
-                            player.spawnParticle(
-                                Particle.REDSTONE,
-                                location,
-                                Config.getCount(),
-                                Particle.DustOptions(Config.getColor(), Config.getSize())
-                            )
-                        }
-                    }
-                }
+            playersWithBreadcrumbs.forEach { (player, breadcrumbs) ->
+                if (player.blockLocation() == breadcrumbs.last().location.toBlockLocation())
+                    return@forEach
+                breadcrumbs.add(BreadcrumbParticle(player, player.location, Config.getColor(), Config.getDuration()))
             }
-        }, 10, 10)
+        }, Config.getPlaceFrequency(), Config.getPlaceFrequency())
+
         logger.info("$name enabled.")
     }
 
@@ -65,14 +53,6 @@ class BreadcrumbsPlugin : JavaPlugin() {
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        if (command.name.equals("breadcrumbs", true) && sender is Player) {
-            if (!playerParticleMap.contains(sender)) playerParticleMap.put(sender, mutableListOf(sender.location))
-                .run { sender.sendMessage("Breadcrumbs &aon&r.", true) }
-            else {
-                val result = playerParticleMap.remove(sender).run { sender.sendMessage("Breadcrumbs &coff&r.", true) }
-                logger.info("Remove success: $result. Map length: ${playerParticleMap.size}")
-            }
-        }
-        return true
+        return CommandDispatcher.onCommand(sender, command, label, args)
     }
 }

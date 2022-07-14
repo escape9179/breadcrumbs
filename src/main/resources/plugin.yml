@@ -11,8 +11,5 @@ permissions:
   breadcrumbs.use:
     description: Allows toggling of breadcrumbs.
     default: true
-commands:
-  breadcrumbs:
-    description: Enable breadcrumbs.
-    permission: breadcrumbs.use
-    aliases: bc
+  breadcrumbs.reload:
+    description: Reload the configuration

@@ -6,7 +6,7 @@ import java.io.File
 import java.io.FileReader
 
 object Config {
-    var configuration = YamlConfiguration.loadConfiguration(File(dataFolderPath))
+    private var configuration = YamlConfiguration.loadConfiguration(File(configPath))
 
     fun getColor() = configuration.getString("breadcrumbs.color")!!
         .split(",")
@@ -16,6 +16,14 @@ object Config {
     fun getSize() = configuration.getDouble("breadcrumbs.size").toFloat()
 
     fun getCount() = configuration.getInt("breadcrumbs.count")
+
+    fun getDuration() = configuration.getInt("breadcrumbs.duration")
+
+    fun getEmissionFrequency() = configuration.getLong("breadcrumbs.emission-frequency")
+
+    fun getPlaceFrequency() = configuration.getLong("breadcrumbs.place-frequency")
+
+    fun getViewDistance() = configuration.getInt("breadcrumbs.view-distance")
 
     fun reload() {
         configuration = YamlConfiguration.loadConfiguration(File(configPath))
