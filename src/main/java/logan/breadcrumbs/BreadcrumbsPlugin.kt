@@ -12,16 +12,17 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.UUID
 
 const val dataFolderPath = "plugins/Breadcrumbs"
 const val configPath = "$dataFolderPath/config.yml"
-val breadcrumbsColorDark = TextColor.color(255, 182, 67)
-val breadcrumbsColorLight = TextColor.color(255, 218, 54)
-val playersWithBreadcrumbs = mutableMapOf<Player, MutableList<BreadcrumbParticle>>()
+val playersWithBreadcrumbs = mutableMapOf<UUID, MutableList<BreadcrumbParticle>>()
 
-object BreadcrumbsPlugin : JavaPlugin() {
+class BreadcrumbsPlugin : JavaPlugin() {
 
     override fun onEnable() {
+        instance = this
+
         val pluginId = 15747
         Metrics(this, pluginId)
 
@@ -38,10 +39,13 @@ object BreadcrumbsPlugin : JavaPlugin() {
         CommandDispatcher.registerCommand(ReloadCommand())
 
         Bukkit.getScheduler().runTaskTimer(this, Runnable {
-            playersWithBreadcrumbs.forEach { (player, breadcrumbs) ->
-                if (player.blockLocation() == breadcrumbs.last().location.toBlockLocation())
+            playersWithBreadcrumbs.forEach { (playerId, breadcrumbs) ->
+                val player = Bukkit.getPlayer(playerId) ?: return@forEach
+                if (player.blockLocation() == breadcrumbs.last().location.toBlockLocation()) {
+                    breadcrumbs.last().duration = Config.getDuration()
                     return@forEach
-                breadcrumbs.add(BreadcrumbParticle(player, player.location, Config.getColor(), Config.getDuration()))
+                }
+                breadcrumbs.add(BreadcrumbParticle(playerId, player.location, Config.getColor(), Config.getDuration()))
             }
         }, Config.getPlaceFrequency(), Config.getPlaceFrequency())
 
@@ -54,5 +58,9 @@ object BreadcrumbsPlugin : JavaPlugin() {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         return CommandDispatcher.onCommand(sender, command, label, args)
+    }
+
+    companion object {
+        lateinit var instance: BreadcrumbsPlugin
     }
 }

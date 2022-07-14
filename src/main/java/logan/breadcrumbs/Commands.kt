@@ -16,10 +16,10 @@ class BreadcrumbsCommand : BasicCommand<CommandSender>(
 ) {
     override fun run(sender: CommandSender, args: Array<out String>, data: Any?): Boolean {
         sender.sendMessage("""
-            ${breadcrumbsColorDark}Breadcrumbs v1.0
-            ${breadcrumbsColorLight}/breadcrumbs reload - Reload config.
-            ${breadcrumbsColorLight}/breadcrumbs toggle - Toggles breadcrumbs on or off.
-        """.trimIndent())
+            &eBreadcrumbs v1.0
+            &e/breadcrumbs reload - Reload config.
+            &e/breadcrumbs toggle - Toggles breadcrumbs on or off.
+        """.trimIndent(), true)
         return true
     }
 }
@@ -34,7 +34,12 @@ class ReloadCommand : BasicCommand<CommandSender>(
 ) {
     override fun run(sender: CommandSender, args: Array<out String>, data: Any?): Boolean {
         Config.reload()
-        sender.sendMessage("${breadcrumbsColorLight}Reloaded config.")
+        playersWithBreadcrumbs.values.forEach {
+            it.filter {
+                it.duration >= Config.getDuration()
+            }.forEach { it.duration = Config.getDuration() }
+        }
+        sender.sendMessage("&eReloaded config.", true)
         return true
     }
 }
@@ -47,17 +52,17 @@ class ToggleCommand : BasicCommand<Player>(
     permissionNode = "breadcrumbs.use",
     aliases = arrayOf("t"),
     usage = """
-        ${ChatColor.RED}Wring syntax:
-        ${breadcrumbsColorLight}/breadcrumbs <toggle|t>
-    """.trimIndent()
+        Wrong syntax:
+        /breadcrumbs <toggle|t>
+    """.trimIndent(),
 ) {
     override fun run(sender: Player, args: Array<out String>, data: Any?): Boolean {
-        if (playersWithBreadcrumbs.contains(sender)) {
-            playersWithBreadcrumbs.remove(sender)
-            sender.sendMessage("${breadcrumbsColorLight}Breadcrumbs &coff.", true)
+        if (playersWithBreadcrumbs.contains(sender.uniqueId)) {
+            playersWithBreadcrumbs.remove(sender.uniqueId)?.forEach(BreadcrumbParticle::cancelTasks)
+            sender.sendMessage("&eBreadcrumbs &coff.", true)
         } else {
-            playersWithBreadcrumbs[sender] = mutableListOf(BreadcrumbParticle(sender, sender.location, Config.getColor(), Config.getDuration()))
-            sender.sendMessage("${breadcrumbsColorLight}Breadcrumbs &aon.", true)
+            playersWithBreadcrumbs[sender.uniqueId] = mutableListOf(BreadcrumbParticle(sender.uniqueId, sender.location, Config.getColor(), Config.getDuration()))
+            sender.sendMessage("&eBreadcrumbs &aon.", true)
         }
         return true
     }

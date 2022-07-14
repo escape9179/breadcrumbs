@@ -13,3 +13,6 @@ permissions:
     default: true
   breadcrumbs.reload:
     description: Reload the configuration
+commands:
+  breadcrumbs:
+    description: Shows commands for Breadcrumbs.
