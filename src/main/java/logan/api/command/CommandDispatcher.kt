@@ -59,18 +59,18 @@ class CommandDispatcher private constructor() {
         }
 
         private fun searchForSubCommandRecursively(
-            commandName: String,
+            label: String,
             args: Array<out String>
         ): Pair<BasicCommand<*>, Array<out String>>? {
 
-            val foundCommand = registeredCommands.find { it.name == commandName } ?: return null
+            val foundCommand = registeredCommands.find { it.name == label || label in it.aliases } ?: return null
 
             /* If there are no arguments provided to the main command, then the user is probably
              expecting help with the command, but this can be left up to the developer.
              */
             if (args.isEmpty()) return foundCommand to args
 
-            return searchForSubCommandRecursively(args[0], args.sliceArray(1..args.lastIndex)) ?: foundCommand to args
+            return searchForSubCommandRecursively(args[0], args.sliceArray(1..args.lastIndex)) ?: (foundCommand to args)
         }
 
         private fun isValidTarget(receivedCommandTarget: SenderTarget, foundCommandTarget: SenderTarget) =
@@ -79,7 +79,6 @@ class CommandDispatcher private constructor() {
         private fun isValidArgLength(receivedArgNum: Int, requiredArgRange: IntRange) =
             (receivedArgNum >= requiredArgRange.first) && (receivedArgNum <= requiredArgRange.last)
 
-        //TODO Have function return casted arguments
         private fun isCorrectArgTypeList(receivedArgs: Array<out String>, requiredArgTypes: List<KClass<*>>): Boolean {
             for (i in receivedArgs.indices) {
                 when (requiredArgTypes[i]) {

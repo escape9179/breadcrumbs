@@ -9,10 +9,10 @@ import org.bukkit.entity.Player
 
 class BreadcrumbsCommand : BasicCommand<CommandSender>(
     "breadcrumbs",
+    "breadcrumbs.use",-
     0..0,
-    target = SenderTarget.BOTH,
-    permissionNode = "breadcrumbs.use",
-    aliases = arrayOf("bc")
+    arrayOf("bc"),
+    SenderTarget.PLAYER
 ) {
     override fun run(sender: CommandSender, args: Array<out String>, data: Any?): Boolean {
         sender.sendMessage("""
@@ -26,11 +26,11 @@ class BreadcrumbsCommand : BasicCommand<CommandSender>(
 
 class ReloadCommand : BasicCommand<CommandSender>(
     "reload",
+    "breadcrumbs.reload",
     0..0,
-    parentCommand = "breadcrumbs",
-    target = SenderTarget.BOTH,
-    permissionNode = "breadcrumbs.reload",
-    aliases = arrayOf("r")
+    arrayOf("r"),
+    SenderTarget.BOTH,
+    "breadcrumbs"
 ) {
     override fun run(sender: CommandSender, args: Array<out String>, data: Any?): Boolean {
         Config.reload()
@@ -46,15 +46,11 @@ class ReloadCommand : BasicCommand<CommandSender>(
 
 class ToggleCommand : BasicCommand<Player>(
     "toggle",
+    "breadcrumbs.use",
     0..0,
-    parentCommand = "breadcrumbs",
-    target = SenderTarget.BOTH,
-    permissionNode = "breadcrumbs.use",
-    aliases = arrayOf("t"),
-    usage = """
-        Wrong syntax:
-        /breadcrumbs <toggle|t>
-    """.trimIndent(),
+    arrayOf("t"),
+    SenderTarget.PLAYER,
+    "breadcrumbs"
 ) {
     override fun run(sender: Player, args: Array<out String>, data: Any?): Boolean {
         if (playersWithBreadcrumbs.contains(sender.uniqueId)) {

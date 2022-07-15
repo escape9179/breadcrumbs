@@ -4,7 +4,7 @@ main: logan.breadcrumbs.BreadcrumbsPlugin
 api-version: 1.19
 prefix: Breadcrumbs
 authors: [ escape9719 ]
-description: Leaves a trail of particles behind the player to help them navigate back to where they were.
+description: Leaves a trail of particles behind the player to help navigate long distances without getting lost.
 permissions:
   breadcrumbs.*:
     description: Access all plugin capabilities and commands.
@@ -16,3 +16,4 @@ permissions:
 commands:
   breadcrumbs:
     description: Shows commands for Breadcrumbs.
+    aliases: bc
