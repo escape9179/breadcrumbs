@@ -1,7 +1,7 @@
 name: Breadcrumbs
 version: '${project.version}'
 main: logan.breadcrumbs.BreadcrumbsPlugin
-api-version: 1.19
+api-version: 1.13
 prefix: Breadcrumbs
 authors: [ escape9719 ]
 description: Leaves a trail of particles behind the player to help navigate long distances without getting lost.
