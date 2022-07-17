@@ -5,6 +5,8 @@ import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
+fun secondsToTicks(seconds: Long) = 20 * seconds
+
 fun CommandSender.sendMessage(message: String, translateColorCodes: Boolean) {
     sendMessage(
         if (translateColorCodes) ChatColor.translateAlternateColorCodes('&', message)

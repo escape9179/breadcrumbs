@@ -8,7 +8,7 @@ import org.bukkit.Particle
 import org.bukkit.scheduler.BukkitTask
 import java.util.*
 
-class BreadcrumbParticle(val playerId: UUID, val location: Location, val color: Color, var duration: Int) {
+class BreadcrumbParticle(val playerId: UUID, val location: Location, var color: Color, var duration: Int) {
     lateinit var durationTask: BukkitTask
     lateinit var spawnerTask: BukkitTask
 

@@ -7,8 +7,8 @@
 
 breadcrumbs:
   # The color of the breadcrumbs.
-  # This is an RGB value.
-  color: 255,182,67
+  # This can be an RGB or HEX value.
+  color: 255 182 67
 
   # The size of the particles.
   # Normal size is 1.0.

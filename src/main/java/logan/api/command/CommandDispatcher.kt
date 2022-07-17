@@ -44,7 +44,7 @@ class CommandDispatcher private constructor() {
                 return true
             }
 
-            if (!isCorrectArgTypeList(foundCommand.second, foundCommand.first.argTypes)) {
+            if (foundCommand.first.argTypes.isNotEmpty() && !isCorrectArgTypeList(foundCommand.second, foundCommand.first.argTypes)) {
                 foundCommand.first.usage?.let { sender.sendMessage(it) }
                 return true
             }

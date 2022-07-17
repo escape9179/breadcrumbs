@@ -4,22 +4,26 @@ import logan.api.command.BasicCommand
 import logan.api.command.SenderTarget
 import logan.api.util.sendMessage
 import org.bukkit.ChatColor
+import org.bukkit.Color
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class BreadcrumbsCommand : BasicCommand<CommandSender>(
     "breadcrumbs",
-    "breadcrumbs.use",-
+    "breadcrumbs.use", -
     0..0,
     arrayOf("bc"),
     SenderTarget.PLAYER
 ) {
     override fun run(sender: CommandSender, args: Array<out String>, data: Any?): Boolean {
-        sender.sendMessage("""
+        sender.sendMessage(
+            """
             &eBreadcrumbs v1.0
             &e/breadcrumbs reload - Reload config.
             &e/breadcrumbs toggle - Toggles breadcrumbs on or off.
-        """.trimIndent(), true)
+            &e/breadcrumbs color - Changes the color of your breadcrumbs.
+        """.trimIndent(), true
+        )
         return true
     }
 }
@@ -57,9 +61,43 @@ class ToggleCommand : BasicCommand<Player>(
             playersWithBreadcrumbs.remove(sender.uniqueId)?.forEach(BreadcrumbParticle::cancelTasks)
             sender.sendMessage("&eBreadcrumbs &coff.", true)
         } else {
-            playersWithBreadcrumbs[sender.uniqueId] = mutableListOf(BreadcrumbParticle(sender.uniqueId, sender.location, Config.getColor(), Config.getDuration()))
+            playersWithBreadcrumbs[sender.uniqueId] = mutableListOf(
+                BreadcrumbParticle(
+                    sender.uniqueId, sender.location,
+                    PlayerConfig.getColor(sender.uniqueId), Config.getDuration()
+                )
+            )
             sender.sendMessage("&eBreadcrumbs &aon.", true)
         }
+        return true
+    }
+}
+
+class ColorCommand : BasicCommand<Player>(
+    "color",
+    "breadcrumbs.color",
+    1..3,
+    arrayOf("color"),
+    SenderTarget.PLAYER,
+    "breadcrumbs"
+) {
+    override fun run(sender: Player, args: Array<out String>, data: Any?): Boolean {
+        val color = try {
+            Class.forName("org.bukkit.Color").getField(args[0].uppercase()).get(null) as Color
+        } catch (e: NoSuchFieldException) {
+            try {
+                if (args.size == 1) {
+                    Color.fromRGB(Integer.decode(args[0].replace("#", "0x")))
+                }
+                else Color.fromRGB(args[0].toInt(), args[1].toInt(), args[2].toInt())
+            } catch (e: IllegalArgumentException) {
+                sender.sendMessage("${ChatColor.RED}Couldn't find color ${args[0]}.")
+                return true
+            }
+        }
+        PlayerConfig.setColor(sender.uniqueId, color)
+        playersWithBreadcrumbs[sender.uniqueId]?.forEach { it.color = color }
+        sender.sendMessage("Set breadcrumb color to ${ChatColor.RED}${color.red},${ChatColor.GREEN}${color.green},${ChatColor.BLUE}${color.blue}.")
         return true
     }
 }
