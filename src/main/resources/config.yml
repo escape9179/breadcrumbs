@@ -28,6 +28,7 @@ message:
 breadcrumbs:
   # The default color for breadcrumbs.
   # This can be an RGB or HEX value.
+  # (Ex. 255 255 255 or 0xFFFFFF)
   color: 255 182 67
 
   # The size of the particles.

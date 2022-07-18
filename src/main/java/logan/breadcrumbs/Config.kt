@@ -21,12 +21,11 @@ object Config {
     fun getUnknownColorMessage() = configuration.getString("message.unknown-color", "Unknown color: %s.")
 
     fun getColor(): Color {
-        configuration.getString("breadcrumbs.color")!!
+        return configuration.getString("breadcrumbs.color")!!
             .split(" ")
-            .map { it.toInt() }
             .run {
-                return if (size > 1) Color.fromRGB(this[0], this[1], this[2])
-                else Color.fromRGB(this[0])
+                if (size == 1) Color.fromRGB(Integer.decode(this[0]))
+                else Color.fromRGB(this[0].toInt(), this[1].toInt(), this[2].toInt())
             }
     }
 

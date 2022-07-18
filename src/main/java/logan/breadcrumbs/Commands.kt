@@ -91,7 +91,8 @@ class ColorCommand : BasicCommand<Player>(
         } catch (e: NoSuchFieldException) {
             try {
                 if (args.size == 1) {
-                    Color.fromRGB(Integer.decode(args[0].replace("#", "0x")))
+                    if (args[0].equals("reset", true)) Config.getColor()
+                    else Color.fromRGB(Integer.decode(args[0].replace("#", "0x")))
                 } else Color.fromRGB(args[0].toInt(), args[1].toInt(), args[2].toInt())
             } catch (e: IllegalArgumentException) {
                 sender.sendMessage(Config.getPrefix() + " " + String.format(Config.getUnknownColorMessage(), args[0]), true)
