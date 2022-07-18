@@ -8,12 +8,12 @@ import org.bukkit.Particle
 import org.bukkit.scheduler.BukkitTask
 import java.util.*
 
-class BreadcrumbParticle(val playerId: UUID, val location: Location, var color: Color, var duration: Int) {
+class BreadcrumbParticle(val playerId: UUID, val location: Location, var color: Color, var duration: Long) {
     lateinit var durationTask: BukkitTask
     lateinit var spawnerTask: BukkitTask
 
     init {
-        durationTask = Bukkit.getScheduler().runTaskTimer(BreadcrumbsPlugin.instance, Runnable {
+        durationTask = Bukkit.getScheduler().runTaskTimer(BreadcrumbsPlugin.instance, {
             if (duration <= 0) {
                 playersWithBreadcrumbs[playerId]!!.remove(this)
                 durationTask.cancel()
@@ -27,6 +27,7 @@ class BreadcrumbParticle(val playerId: UUID, val location: Location, var color: 
             ) return@Runnable
             player.spawnParticle(
                 Particle.REDSTONE, location, Config.getCount(),
+                Config.getSpread(), 0.0, Config.getSpread(),
                 Particle.DustOptions(color, Config.getSize())
             )
         }, Config.getEmissionFrequency(), Config.getEmissionFrequency())

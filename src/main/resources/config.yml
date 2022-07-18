@@ -5,8 +5,28 @@
 # | |_) | | |  __/ (_| | (_| | (__| |  | |_| | | | | | | |_) \__ \
 # |____/|_|  \___|\__,_|\__,_|\___|_|   \__,_|_| |_| |_|_.__/|___/
 
+# The plugin prefix.
+prefix: "&e[Breadcrumbs]&r"
+
+message:
+  # The message sent when the configuration file is reloaded.
+  reload: "Reloaded config."
+
+  # The message sent when breadcrumbs are toggled on.
+  toggle-on: "Breadcrumbs on."
+
+  # The message sent when breadcrumbs are toggled off.
+  toggle-off: "Breadcrumbs off."
+
+  # The message sent when the breadcrumb color is changed.
+  set-color: "Set breadcrumb color to %d, %d, %d."
+
+  # The message sent when an unknown or invalid color is specified
+  # when changing the breadcrumb color.
+  unknown-color: "Unknown color: %s."
+
 breadcrumbs:
-  # The color of the breadcrumbs.
+  # The default color for breadcrumbs.
   # This can be an RGB or HEX value.
   color: 255 182 67
 
@@ -20,9 +40,18 @@ breadcrumbs:
   # breadcrumbs are rendered on the screen at once.
   count: 3
 
+  # The radius in which each breadcrumb particle will
+  # spawn from the players position.
+  # 1.0 = 1 block
+  spread: 0.25
+
   # The amount of time in seconds before a breadcrumb disappears.
-  # 3600 = 1 hour.
-  duration: 3600
+  # Each definition is its own permission. (Ex. duration.short, duration.medium, duration.long)
+  # 600 = 10 minutes, 1800 = 30 minutes, 3600 = 1 hour.
+  duration:
+    default: 1800
+    short: 600
+    long: 3600
 
   # How often to emit new particles for placed breadcrumbs (in ticks).
   # 20 = 1 second, 10 = 1/2 a second.

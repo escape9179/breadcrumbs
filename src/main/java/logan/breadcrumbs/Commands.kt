@@ -3,7 +3,6 @@ package logan.breadcrumbs
 import logan.api.command.BasicCommand
 import logan.api.command.SenderTarget
 import logan.api.util.sendMessage
-import org.bukkit.ChatColor
 import org.bukkit.Color
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -18,10 +17,10 @@ class BreadcrumbsCommand : BasicCommand<CommandSender>(
     override fun run(sender: CommandSender, args: Array<out String>, data: Any?): Boolean {
         sender.sendMessage(
             """
-            &eBreadcrumbs v1.0
-            &e/breadcrumbs reload - Reload config.
-            &e/breadcrumbs toggle - Toggles breadcrumbs on or off.
-            &e/breadcrumbs color - Changes the color of your breadcrumbs.
+            &eBreadcrumbs v1.1
+            &e/breadcrumbs reload &f- Reload config.
+            &e/breadcrumbs toggle &f- Toggles breadcrumbs on or off.
+            &e/breadcrumbs color <(r g b) | #hex | 0xhex> &f- Set the color of your breadcrumbs.
         """.trimIndent(), true
         )
         return true
@@ -40,10 +39,10 @@ class ReloadCommand : BasicCommand<CommandSender>(
         Config.reload()
         playersWithBreadcrumbs.values.forEach {
             it.filter {
-                it.duration >= Config.getDuration()
-            }.forEach { it.duration = Config.getDuration() }
+                it.duration >= Config.getDefaultDuration()
+            }.forEach { it.duration = Config.getDefaultDuration() }
         }
-        sender.sendMessage("&eReloaded config.", true)
+        sender.sendMessage(Config.getPrefix() + " " + Config.getReloadMessage(), true)
         return true
     }
 }
@@ -59,15 +58,21 @@ class ToggleCommand : BasicCommand<Player>(
     override fun run(sender: Player, args: Array<out String>, data: Any?): Boolean {
         if (playersWithBreadcrumbs.contains(sender.uniqueId)) {
             playersWithBreadcrumbs.remove(sender.uniqueId)?.forEach(BreadcrumbParticle::cancelTasks)
-            sender.sendMessage("&eBreadcrumbs &coff.", true)
+            sender.sendMessage(PREFIX + " " + Config.getToggleOffMessage(), true)
         } else {
+            Config.getDurations().filter { sender.hasPermission("breadcrumbs.duration.${it.first}") }
+                .run {
+                    if (isEmpty()) PlayerConfig.setDuration(sender.uniqueId, Config.getDefaultDuration())
+                    else PlayerConfig.setDuration(sender.uniqueId, last().second)
+                }
             playersWithBreadcrumbs[sender.uniqueId] = mutableListOf(
                 BreadcrumbParticle(
                     sender.uniqueId, sender.location,
-                    PlayerConfig.getColor(sender.uniqueId), Config.getDuration()
+                    PlayerConfig.getColor(sender.uniqueId), PlayerConfig.getDuration(sender.uniqueId)
                 )
             )
-            sender.sendMessage("&eBreadcrumbs &aon.", true)
+
+            sender.sendMessage(PREFIX + " " + Config.getToggleOnMessage(), true)
         }
         return true
     }
@@ -77,9 +82,8 @@ class ColorCommand : BasicCommand<Player>(
     "color",
     "breadcrumbs.color",
     1..3,
-    arrayOf("color"),
-    SenderTarget.PLAYER,
-    "breadcrumbs"
+    target = SenderTarget.PLAYER,
+    parentCommand = "breadcrumbs"
 ) {
     override fun run(sender: Player, args: Array<out String>, data: Any?): Boolean {
         val color = try {
@@ -88,16 +92,15 @@ class ColorCommand : BasicCommand<Player>(
             try {
                 if (args.size == 1) {
                     Color.fromRGB(Integer.decode(args[0].replace("#", "0x")))
-                }
-                else Color.fromRGB(args[0].toInt(), args[1].toInt(), args[2].toInt())
+                } else Color.fromRGB(args[0].toInt(), args[1].toInt(), args[2].toInt())
             } catch (e: IllegalArgumentException) {
-                sender.sendMessage("${ChatColor.RED}Couldn't find color ${args[0]}.")
+                sender.sendMessage(Config.getPrefix() + " " + String.format(Config.getUnknownColorMessage(), args[0]), true)
                 return true
             }
         }
         PlayerConfig.setColor(sender.uniqueId, color)
         playersWithBreadcrumbs[sender.uniqueId]?.forEach { it.color = color }
-        sender.sendMessage("Set breadcrumb color to ${ChatColor.RED}${color.red},${ChatColor.GREEN}${color.green},${ChatColor.BLUE}${color.blue}.")
+        sender.sendMessage(Config.getPrefix() + " " + String.format(Config.getSetColorMessage(), color.red, color.green, color.blue), true)
         return true
     }
 }
