@@ -3,6 +3,7 @@ package logan.breadcrumbs
 import logan.api.command.BasicCommand
 import logan.api.command.SenderTarget
 import logan.api.util.sendMessage
+import logan.api.util.toBukkitColor
 import org.bukkit.Color
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -90,10 +91,7 @@ class ColorCommand : BasicCommand<Player>(
             Class.forName("org.bukkit.Color").getField(args[0].uppercase()).get(null) as Color
         } catch (e: NoSuchFieldException) {
             try {
-                if (args.size == 1) {
-                    if (args[0].equals("reset", true)) Config.getColor()
-                    else Color.fromRGB(Integer.decode(args[0].replace("#", "0x")))
-                } else Color.fromRGB(args[0].toInt(), args[1].toInt(), args[2].toInt())
+                args[0].replace("#", "0x").toBukkitColor()
             } catch (e: IllegalArgumentException) {
                 sender.sendMessage(Config.getPrefix() + " " + String.format(Config.getUnknownColorMessage(), args[0]), true)
                 return true

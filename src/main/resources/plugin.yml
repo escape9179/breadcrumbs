@@ -11,6 +11,8 @@ permissions:
   breadcrumbs.use:
     description: Allows toggling of breadcrumbs.
     default: true
+  breadcrumbs.color:
+    description: Allows changing of breadcrumbs color.
   breadcrumbs.reload:
     description: Reload the configuration
 commands:

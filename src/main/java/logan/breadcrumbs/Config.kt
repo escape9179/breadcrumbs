@@ -1,6 +1,6 @@
 package logan.breadcrumbs
 
-import org.bukkit.Color
+import logan.api.util.toBukkitColor
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 
@@ -20,14 +20,7 @@ object Config {
 
     fun getUnknownColorMessage() = configuration.getString("message.unknown-color", "Unknown color: %s.")
 
-    fun getColor(): Color {
-        return configuration.getString("breadcrumbs.color")!!
-            .split(" ")
-            .run {
-                if (size == 1) Color.fromRGB(Integer.decode(this[0]))
-                else Color.fromRGB(this[0].toInt(), this[1].toInt(), this[2].toInt())
-            }
-    }
+    fun getColor() = configuration.getString("breadcrumbs.color")!!.toBukkitColor()
 
     fun getSize() = configuration.getDouble("breadcrumbs.size", 1.0).toFloat()
 
