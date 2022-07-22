@@ -41,6 +41,8 @@ object Config {
 
     fun getPlaceFrequency() = configuration.getLong("breadcrumbs.place-frequency")
 
+    fun getSpawnDistance() = configuration.getDouble("breadcrumbs.spawn-distance", 5.2)
+
     fun getViewDistance() = configuration.getInt("breadcrumbs.view-distance")
 
     fun reload() {

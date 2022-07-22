@@ -1,6 +1,5 @@
 package logan.breadcrumbs
 
-import logan.api.util.distanceFrom
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
@@ -9,22 +8,15 @@ import org.bukkit.scheduler.BukkitTask
 import java.util.*
 
 class BreadcrumbParticle(val playerId: UUID, val location: Location, var color: Color, var duration: Long) {
-    lateinit var durationTask: BukkitTask
-    lateinit var spawnerTask: BukkitTask
+    private lateinit var spawnerTask: BukkitTask
 
     init {
-        durationTask = Bukkit.getScheduler().runTaskTimer(BreadcrumbsPlugin.instance, {
-            if (duration <= 0) {
-                playersWithBreadcrumbs[playerId]!!.remove(this)
-                durationTask.cancel()
-                spawnerTask.cancel()
-            } else duration--
-        }, 20, 20)
+        activate()
+    }
 
+    fun activate() {
         spawnerTask = Bukkit.getScheduler().runTaskTimer(BreadcrumbsPlugin.instance, Runnable {
             val player = Bukkit.getPlayer(playerId) ?: return@Runnable
-            if (player.distanceFrom(location) >= Config.getViewDistance()
-            ) return@Runnable
             player.spawnParticle(
                 Particle.REDSTONE, location, Config.getCount(),
                 Config.getSpread(), 0.0, Config.getSpread(),
@@ -33,10 +25,13 @@ class BreadcrumbParticle(val playerId: UUID, val location: Location, var color: 
         }, Config.getEmissionFrequency(), Config.getEmissionFrequency())
     }
 
-    fun cancelTasks() {
-        durationTask.cancel()
+    fun isActive() = !spawnerTask.isCancelled
+
+    fun deactivate() {
         spawnerTask.cancel()
     }
+
+    fun isWithinViewDistance() = location.distance(playerId.bukkitPlayer.location) <= Config.getViewDistance()
 
     override fun equals(other: Any?): Boolean {
         if (other !is BreadcrumbParticle) return false

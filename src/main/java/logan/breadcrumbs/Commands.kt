@@ -38,8 +38,9 @@ class ReloadCommand : BasicCommand<CommandSender>(
 ) {
     override fun run(sender: CommandSender, args: Array<out String>, data: Any?): Boolean {
         Config.reload()
-        playersWithBreadcrumbs.values.forEach {
-            it.filter {
+        playersWithBreadcrumbs.values.forEach { breadcrumbList ->
+            breadcrumbList.forEach { it.color = PlayerConfig.getColor(it.playerId)}
+            breadcrumbList.filter {
                 it.duration >= Config.getDefaultDuration()
             }.forEach { it.duration = Config.getDefaultDuration() }
         }
@@ -58,7 +59,7 @@ class ToggleCommand : BasicCommand<Player>(
 ) {
     override fun run(sender: Player, args: Array<out String>, data: Any?): Boolean {
         if (playersWithBreadcrumbs.contains(sender.uniqueId)) {
-            playersWithBreadcrumbs.remove(sender.uniqueId)?.forEach(BreadcrumbParticle::cancelTasks)
+            playersWithBreadcrumbs.remove(sender.uniqueId)?.forEach(BreadcrumbParticle::deactivate)
             sender.sendMessage(PREFIX + " " + Config.getToggleOffMessage(), true)
         } else {
             Config.getDurations().filter { sender.hasPermission("breadcrumbs.duration.${it.first}") }
@@ -88,7 +89,8 @@ class ColorCommand : BasicCommand<Player>(
 ) {
     override fun run(sender: Player, args: Array<out String>, data: Any?): Boolean {
         val color = try {
-            Class.forName("org.bukkit.Color").getField(args[0].uppercase()).get(null) as Color
+            if (args[0].equals("reset", true)) null
+            else Class.forName("org.bukkit.Color").getField(args[0].uppercase()).get(null) as Color
         } catch (e: NoSuchFieldException) {
             try {
                 args[0].replace("#", "0x").toBukkitColor()
@@ -98,8 +100,9 @@ class ColorCommand : BasicCommand<Player>(
             }
         }
         PlayerConfig.setColor(sender.uniqueId, color)
-        playersWithBreadcrumbs[sender.uniqueId]?.forEach { it.color = color }
-        sender.sendMessage(Config.getPrefix() + " " + String.format(Config.getSetColorMessage(), color.red, color.green, color.blue), true)
+        val newColor = PlayerConfig.getColor(sender.uniqueId)
+        playersWithBreadcrumbs[sender.uniqueId]?.forEach { it.color = newColor }
+        sender.sendMessage(Config.getPrefix() + " " + String.format(Config.getSetColorMessage(), newColor.red, newColor.green, newColor.blue), true)
         return true
     }
 }

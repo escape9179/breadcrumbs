@@ -18,7 +18,7 @@ object PlayerConfig {
 
     fun getColor(playerId: UUID) = configuration.getColor("$playerId.color", Config.getColor())
 
-    fun setColor(playerId: UUID, color: Color) = configuration.set("$playerId.color", color)
+    fun setColor(playerId: UUID, color: Color?) = configuration.set("$playerId.color", color)
 
     fun getDuration(playerId: UUID) = configuration.getLong("$playerId.duration", Config.getDefaultDuration())
     fun setDuration(playerId: UUID, duration: Long) = configuration.set("$playerId.duration", duration)

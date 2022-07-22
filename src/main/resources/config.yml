@@ -8,6 +8,52 @@
 # The plugin prefix.
 prefix: "&e[Breadcrumbs]&r"
 
+breadcrumbs:
+  # The default color for breadcrumbs.
+  # This can be an RGB or HEX value.
+  # (Ex. 255 255 255 or 0xFFFFFF)
+  color: 0xFFB643
+
+  # The size of the particles.
+  # Normal size is 1.0.
+  # Anything less make the particles smaller.
+  size: 1.0
+
+  # The number of particles to spawn per placement of breadcrumbs.
+  # Keep this number small to minimize client-side lag when many
+  # breadcrumbs are rendered on the screen at once.
+  count: 3
+
+  # The radius in which each breadcrumb particle will
+  # spawn from the players position.
+  # 1.0 = 1 block
+  spread: 0.05
+
+  # The amount of time in seconds before a breadcrumb disappears.
+  # Each definition is its own permission. (Ex. duration.short, duration.medium, duration.long)
+  # 600 = 10 minutes, 1800 = 30 minutes, 3600 = 1 hour.
+  duration:
+    default: 1800
+    short: 600
+    long: 3600
+
+  # How often to emit new particles for placed breadcrumbs (in ticks).
+  # 20 = 1 second, 10 = 1/2 a second.
+  # Setting this value to 5 or less could cause client-side lag.
+  emission-frequency: 20
+
+  # How frequently to place new breadcrumbs when the player
+  # is moving (in ticks).
+  place-frequency: 20
+
+  # The distance (in blocks) the player must travel from previous breadcrumbs
+  # before a new breadcrumb will spawn.
+  spawn-distance: 4
+
+  # The distance in blocks to render breadcrumbs in.
+  # 32 blocks = 2 chunks.
+  view-distance: 16
+
 message:
   # The message sent when the configuration file is reloaded.
   reload: "Reloaded config."
@@ -24,48 +70,6 @@ message:
   # The message sent when an unknown or invalid color is specified
   # when changing the breadcrumb color.
   unknown-color: "Unknown color: %s."
-
-breadcrumbs:
-  # The default color for breadcrumbs.
-  # This can be an RGB or HEX value.
-  # (Ex. 255 255 255 or 0xFFFFFF)
-  color: 255 182 67
-
-  # The size of the particles.
-  # Normal size is 1.0.
-  # Anything less make the particles smaller.
-  size: 1.0
-
-  # The number of particles to spawn per placement of breadcrumbs.
-  # Keep this number small to minimize client-side lag when many
-  # breadcrumbs are rendered on the screen at once.
-  count: 3
-
-  # The radius in which each breadcrumb particle will
-  # spawn from the players position.
-  # 1.0 = 1 block
-  spread: 0.25
-
-  # The amount of time in seconds before a breadcrumb disappears.
-  # Each definition is its own permission. (Ex. duration.short, duration.medium, duration.long)
-  # 600 = 10 minutes, 1800 = 30 minutes, 3600 = 1 hour.
-  duration:
-    default: 1800
-    short: 600
-    long: 3600
-
-  # How often to emit new particles for placed breadcrumbs (in ticks).
-  # 20 = 1 second, 10 = 1/2 a second.
-  # Setting this value to 5 or less could cause client-side lag.
-  emission-frequency: 10
-
-  # How frequently to place new breadcrumbs when the player
-  # is moving.
-  place-frequency: 10
-
-  # The distance in blocks to render breadcrumbs in.
-  # 32 blocks = 2 chunks.
-  view-distance: 32
 
 
 
