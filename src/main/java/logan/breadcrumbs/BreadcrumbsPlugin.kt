@@ -87,7 +87,6 @@ class BreadcrumbsPlugin : JavaPlugin() {
                 breadcrumbList.filter(BreadcrumbParticle::isActive).forEach inner@{ breadcrumb ->
                     if (playerId.bukkitPlayer.location.distance(breadcrumb.location) <= Config.getSpawnDistance()) {
                         breadcrumb.duration = PlayerConfig.getDuration(playerId)
-                        logger.info("Replenished duration of breadcrumb #${breadcrumbList.indexOf(breadcrumb)}")
                         return@outer
                     }
                 }
@@ -123,11 +122,9 @@ class BreadcrumbsPlugin : JavaPlugin() {
                     if (breadcrumb.isWithinViewDistance()) {
                         if (!breadcrumb.isActive())
                             breadcrumb.activate()
-                                .also { logger.info("Actived breadcrumb #${breadcrumbList.indexOf(breadcrumb)}") }
                     } else {
                         if (breadcrumb.isActive())
                             breadcrumb.deactivate()
-                                .also { logger.info("Deactivated breadcrumb #${breadcrumbList.indexOf(breadcrumb)}") }
                     }
                 }
             }
