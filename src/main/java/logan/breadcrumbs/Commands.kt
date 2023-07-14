@@ -2,6 +2,8 @@ package logan.breadcrumbs
 
 import logan.api.command.BasicCommand
 import logan.api.command.SenderTarget
+import logan.api.util.isHexColor
+import logan.api.util.isRgbColor
 import logan.api.util.sendMessage
 import logan.api.util.toBukkitColor
 import org.bukkit.Color
@@ -88,15 +90,19 @@ class ColorCommand : BasicCommand<Player>(
     parentCommand = "breadcrumbs"
 ) {
     override fun run(sender: Player, args: Array<out String>, data: Any?): Boolean {
+        val argsString = args.joinToString(" ")
+        BreadcrumbsPlugin.instance.logger.info("argsString: $argsString")
         val color = try {
             if (args[0].equals("reset", true)) null
             else Class.forName("org.bukkit.Color").getField(args[0].uppercase()).get(null) as Color
         } catch (e: NoSuchFieldException) {
-            try {
-                args[0].replace("#", "0x").toBukkitColor()
-            } catch (e: IllegalArgumentException) {
-                sender.sendMessage(Config.getPrefix() + " " + String.format(Config.getUnknownColorMessage(), args[0]), true)
-                return true
+            val colorMessage = Config.getPrefix() + " " + String.format(Config.getUnknownColorMessage(), args[0])
+            when {
+                argsString.isHexColor() || argsString.isRgbColor() -> argsString.toBukkitColor()
+                else -> {
+                    sender.sendMessage(colorMessage, true)
+                    return true
+                }
             }
         }
         PlayerConfig.setColor(sender.uniqueId, color)

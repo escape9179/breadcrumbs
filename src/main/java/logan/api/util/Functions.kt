@@ -32,7 +32,20 @@ fun Location.toBlockLocation() = Location(world, blockX.toDouble(), blockY.toDou
 fun String.toBukkitColor(): Color {
     return split(" ")
         .run {
-            if (size == 1) Color.fromRGB(Integer.decode(this[0]))
+            if (size == 1) {
+                val formattedHexString = this[0].replace("#", "0x")
+                Color.fromRGB(Integer.decode(formattedHexString))
+            }
             else Color.fromRGB(this[0].toInt(), this[1].toInt(), this[2].toInt())
         }
+}
+
+fun String.isHexColor(): Boolean {
+    val regex = "(#|0x)(\\d|[A-Fa-f]){6}".toRegex()
+    return this.matches(regex)
+}
+
+fun String.isRgbColor(): Boolean {
+    val regex = "\\d{1,3} \\d{1,3} \\d{1,3}".toRegex()
+    return this.matches(regex)
 }
