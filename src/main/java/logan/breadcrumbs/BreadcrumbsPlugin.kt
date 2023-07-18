@@ -104,12 +104,15 @@ class BreadcrumbsPlugin : JavaPlugin() {
 
     private fun startBreadcrumbDurationTimer() {
         Bukkit.getScheduler().runTaskTimer(this, {
-            playersWithBreadcrumbs.forEach { (playerId, breadcrumbList) ->
-                for (breadcrumb in breadcrumbList) {
+            playersWithBreadcrumbs.forEach { (_, breadcrumbList) ->
+                breadcrumbList.removeIf { breadcrumb ->
                     if (breadcrumb.duration <= 0) {
-                        playersWithBreadcrumbs[playerId]!!.remove(breadcrumb)
                         breadcrumb.deactivate()
-                    } else breadcrumb.duration--
+                        true
+                    } else {
+                        breadcrumb.duration--
+                        false
+                    }
                 }
             }
         }, 20, 20)
