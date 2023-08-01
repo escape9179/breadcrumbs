@@ -85,31 +85,38 @@ class BreadcrumbsPlugin : JavaPlugin() {
         Bukkit.getScheduler().runTaskTimer(this, {
             playersWithBreadcrumbs.forEach outer@{ (playerId, breadcrumbList) ->
                 breadcrumbList.filter(BreadcrumbParticle::isActive).forEach inner@{ breadcrumb ->
-                    if (playerId.bukkitPlayer.location.distance(breadcrumb.location) <= Config.getSpawnDistance()) {
-                        breadcrumb.duration = PlayerConfig.getDuration(playerId)
+                    val player = playerId.bukkitPlayer
+                    if (player.isCloseToBreadcrumb(breadcrumb)) {
+                        breadcrumb.resetDuration()
                         return@outer
                     }
                 }
-                breadcrumbList.add(
-                    BreadcrumbParticle(
-                        playerId,
-                        playerId.bukkitPlayer.location,
-                        PlayerConfig.getColor(playerId),
-                        PlayerConfig.getDuration(playerId)
-                    )
-                )
+                val breadcrumb = placeBreadcrumbForPlayer(playerId)
+                breadcrumbList.add(breadcrumb)
             }
         }, Config.getPlaceFrequency(), Config.getPlaceFrequency())
     }
 
+    private fun placeBreadcrumbForPlayer(playerId: UUID): BreadcrumbParticle {
+        return BreadcrumbParticle(
+            playerId,
+            playerId.bukkitPlayer.location,
+            PlayerConfig.getColor(playerId),
+            PlayerConfig.getDuration(playerId)
+        )
+    }
+
     private fun startBreadcrumbDurationTimer() {
         Bukkit.getScheduler().runTaskTimer(this, {
-            playersWithBreadcrumbs.forEach { (playerId, breadcrumbList) ->
-                for (breadcrumb in breadcrumbList) {
+            playersWithBreadcrumbs.forEach { (_, breadcrumbList) ->
+                breadcrumbList.removeIf { breadcrumb ->
                     if (breadcrumb.duration <= 0) {
-                        playersWithBreadcrumbs[playerId]!!.remove(breadcrumb)
                         breadcrumb.deactivate()
-                    } else breadcrumb.duration--
+                        true
+                    } else {
+                        breadcrumb.duration--
+                        false
+                    }
                 }
             }
         }, 20, 20)
@@ -117,18 +124,34 @@ class BreadcrumbsPlugin : JavaPlugin() {
 
     private fun startBreadcrumbUpdateTimer() {
         Bukkit.getScheduler().runTaskTimer(this, {
-            playersWithBreadcrumbs.forEach { (_, breadcrumbList) ->
-                breadcrumbList.forEach { breadcrumb ->
-                    if (breadcrumb.isWithinViewDistance()) {
-                        if (!breadcrumb.isActive())
+            for (entry in playersWithBreadcrumbs.entries) {
+                for (onlinePlayer in Bukkit.getOnlinePlayers()) {
+                    for (nearbyBreadcrumb in onlinePlayer.nearbyBreadcrumbs(entry.value, Config.getViewDistance())) {
+                        nearbyBreadcrumb.addViewerOfNotAlreadyViewing(onlinePlayer.uniqueId)
+                    }
+                }
+            }
+
+            updateBreadcrumbsVisibility()
+        }, 20, 20)
+    }
+
+    private fun updateBreadcrumbsVisibility() {
+        playersWithBreadcrumbs.forEach { (_, breadcrumbList) ->
+            breadcrumbList.forEach { breadcrumb ->
+                for (player in server.onlinePlayers) {
+                    if (breadcrumb.isWithinViewDistanceOf(player)) {
+                        if (!breadcrumb.isActive()) {
                             breadcrumb.activate()
+                            return
+                        }
                     } else {
                         if (breadcrumb.isActive())
                             breadcrumb.deactivate()
                     }
                 }
             }
-        }, 20, 20)
+        }
     }
 
     companion object {

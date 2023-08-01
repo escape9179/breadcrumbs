@@ -10,3 +10,7 @@ val UUID.bukkitPlayer: Player
 fun Player.nearbyBreadcrumbs(breadcrumbs: List<BreadcrumbParticle>, distance: Int): List<BreadcrumbParticle> {
     return breadcrumbs.filter { it.location.distance(this.location) <= distance }
 }
+
+fun Player.isCloseToBreadcrumb(breadcrumb: BreadcrumbParticle): Boolean {
+    return location.distance(breadcrumb.location) <= Config.getSpawnDistance()
+}
