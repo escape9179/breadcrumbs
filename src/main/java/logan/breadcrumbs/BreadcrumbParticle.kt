@@ -20,7 +20,7 @@ class BreadcrumbParticle(val playerId: UUID, val location: Location, var color: 
     fun activate() {
         spawnerTask = Bukkit.getScheduler().runTaskTimer(BreadcrumbsPlugin.instance, {
             viewers.forEach { viewerId ->
-                val viewer = Bukkit.getPlayer(viewerId)
+                val viewer = viewerId.bukkitPlayer ?: return@forEach
                     viewer.spawnParticle(
                         Particle.REDSTONE, location, Config.getCount(),
                         Config.getSpread(), 0.0, Config.getSpread(),
