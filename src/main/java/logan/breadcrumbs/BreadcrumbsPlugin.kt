@@ -85,21 +85,25 @@ class BreadcrumbsPlugin : JavaPlugin() {
         Bukkit.getScheduler().runTaskTimer(this, {
             playersWithBreadcrumbs.forEach outer@{ (playerId, breadcrumbList) ->
                 breadcrumbList.filter(BreadcrumbParticle::isActive).forEach inner@{ breadcrumb ->
-                    if (playerId.bukkitPlayer.location.distance(breadcrumb.location) <= Config.getSpawnDistance()) {
-                        breadcrumb.duration = PlayerConfig.getDuration(playerId)
+                    val player = playerId.bukkitPlayer
+                    if (player.isCloseToBreadcrumb(breadcrumb)) {
+                        breadcrumb.resetDuration()
                         return@outer
                     }
                 }
-                breadcrumbList.add(
-                    BreadcrumbParticle(
-                        playerId,
-                        playerId.bukkitPlayer.location,
-                        PlayerConfig.getColor(playerId),
-                        PlayerConfig.getDuration(playerId)
-                    )
-                )
+                val breadcrumb = placeBreadcrumbForPlayer(playerId)
+                breadcrumbList.add(breadcrumb)
             }
         }, Config.getPlaceFrequency(), Config.getPlaceFrequency())
+    }
+
+    private fun placeBreadcrumbForPlayer(playerId: UUID): BreadcrumbParticle {
+        return BreadcrumbParticle(
+            playerId,
+            playerId.bukkitPlayer.location,
+            PlayerConfig.getColor(playerId),
+            PlayerConfig.getDuration(playerId)
+        )
     }
 
     private fun startBreadcrumbDurationTimer() {
@@ -130,6 +134,24 @@ class BreadcrumbsPlugin : JavaPlugin() {
 
             updateBreadcrumbsVisibility()
         }, 20, 20)
+    }
+
+    private fun updateBreadcrumbsVisibility() {
+        playersWithBreadcrumbs.forEach { (_, breadcrumbList) ->
+            breadcrumbList.forEach { breadcrumb ->
+                for (player in server.onlinePlayers) {
+                    if (breadcrumb.isWithinViewDistanceOf(player)) {
+                        if (!breadcrumb.isActive()) {
+                            breadcrumb.activate()
+                            return
+                        }
+                    } else {
+                        if (breadcrumb.isActive())
+                            breadcrumb.deactivate()
+                    }
+                }
+            }
+        }
     }
 
     companion object {
