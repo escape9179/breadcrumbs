@@ -8,6 +8,14 @@ import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitTask
 import java.util.*
 
+/**
+ * Represents a breadcrumb particle that is emitted by a player.
+ *
+ * @param playerId The UUID of the player emitting the particle.
+ * @param location The location where the particle should be spawned.
+ * @param color The color of the particle.
+ * @param duration The duration of the particle in milliseconds.
+ */
 class BreadcrumbParticle(val playerId: UUID, val location: Location, var color: Color, var duration: Long) {
     private lateinit var spawnerTask: BukkitTask
     private val viewers = mutableSetOf<UUID>()
@@ -17,6 +25,16 @@ class BreadcrumbParticle(val playerId: UUID, val location: Location, var color: 
         activate()
     }
 
+    /**
+     * Activates the particle emission.
+     *
+     * This method starts a task that repeatedly emits particles with the configured settings.
+     * The particles are emitted at the specified emission frequency and spread around the
+     * specified location. The color and size of the particles are also determined by the
+     * configuration.
+     *
+     * @throws IllegalStateException if the Bukkit scheduler is not available.
+     */
     fun activate() {
         spawnerTask = Bukkit.getScheduler().runTaskTimer(BreadcrumbsPlugin.instance, {
             viewers.forEach { viewerId ->

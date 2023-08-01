@@ -36,8 +36,8 @@ class BreadcrumbsPlugin : JavaPlugin() {
         registerEvents()
         registerCommands()
         startBreadcrumbPlaceTimer()
-        startBreadcrumbDurationTimer()
-        startBreadcrumbUpdateTimer()
+        startBreadcrumbDurationMonitor()
+        startBreadcrumbVisibilityUpdater()
 
         logger.info("$name enabled.")
     }
@@ -82,6 +82,20 @@ class BreadcrumbsPlugin : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerJoinListener(), this)
     }
 
+    /**
+     * Starts a timer to periodically place breadcrumbs for players.
+     *
+     * This method uses a Bukkit scheduler to run a task at regular intervals.
+     * The task iterates through the `playersWithBreadcrumbs` map, checks if
+     * any active breadcrumbs are close to the player, and resets their duration.
+     * If no active breadcrumbs are close to the player, a new breadcrumb is placed
+     * and added to the player's breadcrumb list.
+     *
+     * @see Config.getPlaceFrequency
+     * @see BreadcrumbParticle.isActive
+     * @see Player.isCloseToBreadcrumb
+     * @see placeBreadcrumbForPlayer
+     */
     private fun startBreadcrumbPlaceTimer() {
         Bukkit.getScheduler().runTaskTimer(this, {
             playersWithBreadcrumbs.forEach outer@{ (playerId, breadcrumbList) ->
@@ -107,7 +121,12 @@ class BreadcrumbsPlugin : JavaPlugin() {
         )
     }
 
-    private fun startBreadcrumbDurationTimer() {
+    /**
+     * Starts a timer to monitor the duration of active breadcrumbs for all players.
+     * The duration for each breadcrumb will be decremented by 1 at each tick of the timer,
+     * and any breadcrumbs with a duration less than or equal to 0 will be deactivated and removed.
+     */
+    private fun startBreadcrumbDurationMonitor() {
         Bukkit.getScheduler().runTaskTimer(this, {
             playersWithBreadcrumbs.forEach { (_, breadcrumbList) ->
                 breadcrumbList.removeIf { breadcrumb ->
@@ -123,7 +142,11 @@ class BreadcrumbsPlugin : JavaPlugin() {
         }, 20, 20)
     }
 
-    private fun startBreadcrumbUpdateTimer() {
+    /**
+     * Starts a timer that updates the visibility of breadcrumbs for all players.
+     * This method is called internally by the plugin and is not meant to be accessed directly.
+     */
+    private fun startBreadcrumbVisibilityUpdater() {
         Bukkit.getScheduler().runTaskTimer(this, {
             for (entry in playersWithBreadcrumbs.entries) {
                 for (onlinePlayer in Bukkit.getOnlinePlayers()) {
