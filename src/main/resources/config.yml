@@ -54,6 +54,11 @@ breadcrumbs:
   # 32 blocks = 2 chunks.
   view-distance: 16
 
+  # If true, everybody can see each other's breadcrumbs.
+  # If false, players can only see their own breadcrumbs, and players can only see each
+  # others breadcrumbs if they add other viewers to them via command.
+  multiplayer: false
+
 message:
   # The message sent when the configuration file is reloaded.
   reload: "Reloaded config."

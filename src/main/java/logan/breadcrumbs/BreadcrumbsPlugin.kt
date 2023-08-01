@@ -120,17 +120,15 @@ class BreadcrumbsPlugin : JavaPlugin() {
 
     private fun startBreadcrumbUpdateTimer() {
         Bukkit.getScheduler().runTaskTimer(this, {
-            playersWithBreadcrumbs.forEach { (_, breadcrumbList) ->
-                breadcrumbList.forEach { breadcrumb ->
-                    if (breadcrumb.isWithinViewDistance()) {
-                        if (!breadcrumb.isActive())
-                            breadcrumb.activate()
-                    } else {
-                        if (breadcrumb.isActive())
-                            breadcrumb.deactivate()
+            for (entry in playersWithBreadcrumbs.entries) {
+                for (onlinePlayer in Bukkit.getOnlinePlayers()) {
+                    for (nearbyBreadcrumb in onlinePlayer.nearbyBreadcrumbs(entry.value, Config.getViewDistance())) {
+                        nearbyBreadcrumb.addViewerOfNotAlreadyViewing(onlinePlayer.uniqueId)
                     }
                 }
             }
+
+            updateBreadcrumbsVisibility()
         }, 20, 20)
     }
 

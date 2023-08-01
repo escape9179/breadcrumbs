@@ -45,6 +45,8 @@ object Config {
 
     fun getViewDistance() = configuration.getInt("breadcrumbs.view-distance")
 
+    fun getMultiplayer() = configuration.getBoolean("breadcrumbs.multiplayer", false)
+
     fun reload() {
         configuration = YamlConfiguration.loadConfiguration(File(CONFIG_PATH))
     }
