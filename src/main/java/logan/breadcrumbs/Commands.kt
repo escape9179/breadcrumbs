@@ -124,13 +124,14 @@ class AddCommand : BasicCommand<Player>(
 ) {
     override fun run(sender: Player, args: Array<out String>, data: Any?): Boolean {
         val playerToAdd = Bukkit.getPlayer(args[0]) ?: run {
-            sender.sendMessage(Config.getCannotFindPlayerMessage())
+            sender.sendMessage(Config.getCannotFindPlayerMessage(), true)
             return true
         }
         playersWithBreadcrumbs[sender.uniqueId]?.forEach {
             it.addViewerOfNotAlreadyViewing(playerToAdd.uniqueId)
         }
-        sender.sendMessage(Config.getAddViewerSuccessMessage())
+        val formattedMessage = String.format(Config.getAddViewerSuccessMessage(), playerToAdd.name)
+        sender.sendMessage(formattedMessage, true)
         return true
     }
 }
@@ -145,13 +146,14 @@ class RemoveCommand : BasicCommand<Player>(
 ) {
     override fun run(sender: Player, args: Array<out String>, data: Any?): Boolean {
         val playerToRemove = Bukkit.getPlayer(args[0]) ?: run {
-            sender.sendMessage(Config.getCannotFindPlayerMessage())
+            sender.sendMessage(Config.getCannotFindPlayerMessage(), true)
             return true
         }
         playersWithBreadcrumbs[sender.uniqueId]?.forEach {
             it.removeViewer(playerToRemove.uniqueId)
         }
-        sender.sendMessage(Config.getRemoveViewerSuccessMessage())
+        val formattedMessage = String.format(Config.getRemoveViewerSuccessMessage(), playerToRemove.name)
+        sender.sendMessage(formattedMessage, true)
         return true
     }
 }
