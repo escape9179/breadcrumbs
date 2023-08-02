@@ -54,11 +54,6 @@ breadcrumbs:
   # 32 blocks = 2 chunks.
   view-distance: 16
 
-  # If true, everybody can see each other's breadcrumbs.
-  # If false, players can only see their own breadcrumbs, and players can only see each
-  # others breadcrumbs if they add other viewers to them via command.
-  multiplayer: false
-
 message:
   # The message sent when the configuration file is reloaded.
   reload: "Reloaded config."
@@ -76,5 +71,13 @@ message:
   # when changing the breadcrumb color.
   unknown-color: "Unknown color: %s."
 
+  # The message send when the player specified in a command
+  # doesn't exist or isn't online.
+  cannot-find-player: "Cannot find player: %s."
 
+  # The message sent when a player is added as a viewer to their breadcrumbs.
+  add-viewer-success: "Successfully added %s as a viewer."
+
+  # The message sent when a player is removed as a viewer to their breadcrumbs.
+  remove-viewer-success: "Successfully removed %s as a viewer."
 

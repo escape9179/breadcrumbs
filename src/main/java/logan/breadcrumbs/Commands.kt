@@ -2,10 +2,8 @@ package logan.breadcrumbs
 
 import logan.api.command.BasicCommand
 import logan.api.command.SenderTarget
-import logan.api.util.isHexColor
-import logan.api.util.isRgbColor
-import logan.api.util.sendMessage
-import logan.api.util.toBukkitColor
+import logan.api.util.*
+import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -76,7 +74,7 @@ class ToggleCommand : BasicCommand<Player>(
                 )
             )
 
-            sender.sendMessage(PREFIX + " " + Config.getToggleOnMessage(), true)
+            sender.sendMessage(Config.getPrefix() + " " + Config.getToggleOnMessage(), true)
         }
         return true
     }
@@ -109,6 +107,48 @@ class ColorCommand : BasicCommand<Player>(
         val newColor = PlayerConfig.getColor(sender.uniqueId)
         playersWithBreadcrumbs[sender.uniqueId]?.forEach { it.color = newColor }
         sender.sendMessage(Config.getPrefix() + " " + String.format(Config.getSetColorMessage(), newColor.red, newColor.green, newColor.blue), true)
+        return true
+    }
+}
+
+class AddCommand : BasicCommand<Player>(
+    "add",
+    "breadcrumbs.add",
+    1..1,
+    target = SenderTarget.PLAYER,
+    parentCommand = "breadcrumbs",
+    argTypes = listOf(String::class),
+) {
+    override fun run(sender: Player, args: Array<out String>, data: Any?): Boolean {
+        val playerToAdd = Bukkit.getPlayer(args[0]) ?: run {
+            sender.sendMessage(Config.getCannotFindPlayerMessage(), true)
+            return true
+        }
+        playersWithBreadcrumbs[sender.uniqueId]?.forEach {
+            it.addViewerOfNotAlreadyViewing(playerToAdd.uniqueId)
+        }
+        sender.sendColoredFormattedMessage(Config.getPrefix() + " " + Config.getAddViewerSuccessMessage(), playerToAdd.name)
+        return true
+    }
+}
+
+class RemoveCommand : BasicCommand<Player>(
+    "remove",
+    "breadcrumbs.remove",
+    1..1,
+    target = SenderTarget.PLAYER,
+    parentCommand = "breadcrumbs",
+    argTypes = listOf(String::class),
+) {
+    override fun run(sender: Player, args: Array<out String>, data: Any?): Boolean {
+        val playerToRemove = Bukkit.getPlayer(args[0]) ?: run {
+            sender.sendMessage(Config.getCannotFindPlayerMessage(), true)
+            return true
+        }
+        playersWithBreadcrumbs[sender.uniqueId]?.forEach {
+            it.removeViewer(playerToRemove.uniqueId)
+        }
+        sender.sendColoredFormattedMessage(Config.getPrefix() + " " + Config.getRemoveViewerSuccessMessage(), playerToRemove.name)
         return true
     }
 }

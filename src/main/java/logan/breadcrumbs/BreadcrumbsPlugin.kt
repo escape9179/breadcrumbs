@@ -7,6 +7,7 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.IOException
 import java.nio.file.Files
@@ -35,8 +36,8 @@ class BreadcrumbsPlugin : JavaPlugin() {
         registerEvents()
         registerCommands()
         startBreadcrumbPlaceTimer()
-        startBreadcrumbDurationTimer()
-        startBreadcrumbUpdateTimer()
+        startBreadcrumbDurationMonitor()
+        startBreadcrumbVisibilityUpdater()
 
         logger.info("$name enabled.")
     }
@@ -75,38 +76,59 @@ class BreadcrumbsPlugin : JavaPlugin() {
         CommandDispatcher.registerCommand(ToggleCommand())
         CommandDispatcher.registerCommand(ReloadCommand())
         CommandDispatcher.registerCommand(ColorCommand())
+        CommandDispatcher.registerCommand(AddCommand())
+        CommandDispatcher.registerCommand(RemoveCommand())
     }
 
     private fun registerEvents() {
         server.pluginManager.registerEvents(PlayerJoinListener(), this)
     }
 
+    /**
+     * Starts a timer to periodically place breadcrumbs for players.
+     *
+     * This method uses a Bukkit scheduler to run a task at regular intervals.
+     * The task iterates through the `playersWithBreadcrumbs` map, checks if
+     * any active breadcrumbs are close to the player, and resets their duration.
+     * If no active breadcrumbs are close to the player, a new breadcrumb is placed
+     * and added to the player's breadcrumb list.
+     *
+     * @see Config.getPlaceFrequency
+     * @see BreadcrumbParticle.isActive
+     * @see Player.isCloseToBreadcrumb
+     * @see placeBreadcrumbForPlayer
+     */
     private fun startBreadcrumbPlaceTimer() {
         Bukkit.getScheduler().runTaskTimer(this, {
             playersWithBreadcrumbs.forEach outer@{ (playerId, breadcrumbList) ->
+                val player = playerId.bukkitPlayer ?: return@outer
                 breadcrumbList.filter(BreadcrumbParticle::isActive).forEach inner@{ breadcrumb ->
-                    val player = playerId.bukkitPlayer
                     if (player.isCloseToBreadcrumb(breadcrumb)) {
                         breadcrumb.resetDuration()
                         return@outer
                     }
                 }
-                val breadcrumb = placeBreadcrumbForPlayer(playerId)
+                val breadcrumb = placeBreadcrumbForPlayer(player)
                 breadcrumbList.add(breadcrumb)
             }
         }, Config.getPlaceFrequency(), Config.getPlaceFrequency())
     }
 
-    private fun placeBreadcrumbForPlayer(playerId: UUID): BreadcrumbParticle {
+    private fun placeBreadcrumbForPlayer(player: Player): BreadcrumbParticle {
         return BreadcrumbParticle(
-            playerId,
-            playerId.bukkitPlayer.location,
-            PlayerConfig.getColor(playerId),
-            PlayerConfig.getDuration(playerId)
+            player.uniqueId,
+            player.location,
+            PlayerConfig.getColor(player.uniqueId),
+            PlayerConfig.getDuration(player.uniqueId)
         )
     }
 
-    private fun startBreadcrumbDurationTimer() {
+    /**
+     * Starts a timer to monitor the duration of active breadcrumbs for all players.
+     * The duration for each breadcrumb will be decremented by 1 at each tick of the timer,
+     * and any breadcrumbs with a duration less than or equal to 0 will be deactivated and removed.
+     */
+    private fun startBreadcrumbDurationMonitor() {
         Bukkit.getScheduler().runTaskTimer(this, {
             playersWithBreadcrumbs.forEach { (_, breadcrumbList) ->
                 breadcrumbList.removeIf { breadcrumb ->
@@ -122,16 +144,12 @@ class BreadcrumbsPlugin : JavaPlugin() {
         }, 20, 20)
     }
 
-    private fun startBreadcrumbUpdateTimer() {
+    /**
+     * Starts a timer that updates the visibility of breadcrumbs for all players.
+     * This method is called internally by the plugin and is not meant to be accessed directly.
+     */
+    private fun startBreadcrumbVisibilityUpdater() {
         Bukkit.getScheduler().runTaskTimer(this, {
-            for (entry in playersWithBreadcrumbs.entries) {
-                for (onlinePlayer in Bukkit.getOnlinePlayers()) {
-                    for (nearbyBreadcrumb in onlinePlayer.nearbyBreadcrumbs(entry.value, Config.getViewDistance())) {
-                        nearbyBreadcrumb.addViewerOfNotAlreadyViewing(onlinePlayer.uniqueId)
-                    }
-                }
-            }
-
             updateBreadcrumbsVisibility()
         }, 20, 20)
     }
