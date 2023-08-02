@@ -134,3 +134,24 @@ class AddCommand : BasicCommand<Player>(
         return true
     }
 }
+
+class RemoveCommand : BasicCommand<Player>(
+    "remove",
+    "breadcrumbs.remove",
+    1..1,
+    target = SenderTarget.PLAYER,
+    parentCommand = "breadcrumbs",
+    argTypes = listOf(String::class),
+) {
+    override fun run(sender: Player, args: Array<out String>, data: Any?): Boolean {
+        val playerToRemove = Bukkit.getPlayer(args[0]) ?: run {
+            sender.sendMessage(Config.getCannotFindPlayerMessage())
+            return true
+        }
+        playersWithBreadcrumbs[sender.uniqueId]?.forEach {
+            it.removeViewer(playerToRemove.uniqueId)
+        }
+        sender.sendMessage(Config.getRemoveViewerSuccessMessage())
+        return true
+    }
+}

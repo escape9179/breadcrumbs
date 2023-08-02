@@ -76,6 +76,8 @@ class BreadcrumbsPlugin : JavaPlugin() {
         CommandDispatcher.registerCommand(ToggleCommand())
         CommandDispatcher.registerCommand(ReloadCommand())
         CommandDispatcher.registerCommand(ColorCommand())
+        CommandDispatcher.registerCommand(AddCommand())
+        CommandDispatcher.registerCommand(RemoveCommand())
     }
 
     private fun registerEvents() {

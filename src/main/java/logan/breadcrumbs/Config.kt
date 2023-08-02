@@ -23,6 +23,8 @@ object Config {
 
     fun getAddViewerSuccessMessage() = configuration.getString("message.viewer-add-success", "Successfully added %s as a viewer.")
 
+    fun getRemoveViewerSuccessMessage() = configuration.getString("message.viewer-remove-success", "Successfully removed %s as a viewer.")
+
     fun getColor() = configuration.getString("breadcrumbs.color")!!.toBukkitColor()
 
     fun getSize() = configuration.getDouble("breadcrumbs.size", 1.0).toFloat()

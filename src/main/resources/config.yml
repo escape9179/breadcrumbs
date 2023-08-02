@@ -83,4 +83,6 @@ message:
   # The message sent when a player is added as a viewer to their breadcrumbs.
   add-viewer-success: "Successfully added %s as a viewer."
 
+  # The message sent when a player is removed as a viewer to their breadcrumbs.
+  remove-viewer-success: "Successfully removed %s as a viewer."
 
