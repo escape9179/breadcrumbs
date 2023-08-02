@@ -19,6 +19,9 @@ object Config {
     fun getSetColorMessage() = configuration.getString("message.set-color", "Set breadcrumb color to %d, %d, %d.")
 
     fun getUnknownColorMessage() = configuration.getString("message.unknown-color", "Unknown color: %s.")
+    fun getCannotFindPlayerMessage() = configuration.getString("message.cannot-find-player", "Cannot find player: %s.")
+
+    fun getAddViewerSuccessMessage() = configuration.getString("message.viewer-add-success", "Successfully added %s as a viewer.")
 
     fun getColor() = configuration.getString("breadcrumbs.color")!!.toBukkitColor()
 

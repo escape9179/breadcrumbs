@@ -76,5 +76,11 @@ message:
   # when changing the breadcrumb color.
   unknown-color: "Unknown color: %s."
 
+  # The message send when the player specified in a command
+  # doesn't exist or isn't online.
+  cannot-find-player: "Cannot find player: %s."
+
+  # The message sent when a player is added as a viewer to their breadcrumbs.
+  add-viewer-success: "Successfully added %s as a viewer."
 
 
