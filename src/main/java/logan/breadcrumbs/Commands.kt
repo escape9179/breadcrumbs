@@ -74,7 +74,7 @@ class ToggleCommand : BasicCommand<Player>(
                 )
             )
 
-            sender.sendMessage(PREFIX + " " + Config.getToggleOnMessage(), true)
+            sender.sendMessage(Config.getPrefix() + " " + Config.getToggleOnMessage(), true)
         }
         return true
     }
@@ -127,7 +127,7 @@ class AddCommand : BasicCommand<Player>(
         playersWithBreadcrumbs[sender.uniqueId]?.forEach {
             it.addViewerOfNotAlreadyViewing(playerToAdd.uniqueId)
         }
-        sender.sendColoredFormattedMessage(Config.getAddViewerSuccessMessage(), playerToAdd.name)
+        sender.sendColoredFormattedMessage(Config.getPrefix() + " " + Config.getAddViewerSuccessMessage(), playerToAdd.name)
         return true
     }
 }
@@ -148,7 +148,7 @@ class RemoveCommand : BasicCommand<Player>(
         playersWithBreadcrumbs[sender.uniqueId]?.forEach {
             it.removeViewer(playerToRemove.uniqueId)
         }
-        sender.sendColoredFormattedMessage(Config.getRemoveViewerSuccessMessage(), playerToRemove.name)
+        sender.sendColoredFormattedMessage(Config.getPrefix() + " " + Config.getRemoveViewerSuccessMessage(), playerToRemove.name)
         return true
     }
 }
