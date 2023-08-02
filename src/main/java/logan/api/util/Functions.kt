@@ -15,6 +15,10 @@ fun CommandSender.sendMessage(message: String, translateColorCodes: Boolean) {
     )
 }
 
+fun CommandSender.sendColoredFormattedMessage(message: String, vararg params: Any) {
+    sendMessage(String.format(message, params), true)
+}
+
 fun CommandSender.hasNoPermission(node: String): Boolean {
     return !this.hasPermission(node)
 }
