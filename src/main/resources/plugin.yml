@@ -11,6 +11,12 @@ permissions:
   breadcrumbs.use:
     description: Allows toggling of breadcrumbs.
     default: true
+  breadcrumbs.add:
+    description: Allows adding players as viewers of breadcrumbs.
+    default: true
+  breadcrumbs.remove:
+    description: Allows removing players as viewers of breadcrumbs.
+    default: true
   breadcrumbs.color:
     description: Allows changing of breadcrumbs color.
   breadcrumbs.reload:
