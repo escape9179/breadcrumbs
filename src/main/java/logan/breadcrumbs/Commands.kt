@@ -2,10 +2,7 @@ package logan.breadcrumbs
 
 import logan.api.command.BasicCommand
 import logan.api.command.SenderTarget
-import logan.api.util.isHexColor
-import logan.api.util.isRgbColor
-import logan.api.util.sendMessage
-import logan.api.util.toBukkitColor
+import logan.api.util.*
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.command.CommandSender
@@ -130,8 +127,7 @@ class AddCommand : BasicCommand<Player>(
         playersWithBreadcrumbs[sender.uniqueId]?.forEach {
             it.addViewerOfNotAlreadyViewing(playerToAdd.uniqueId)
         }
-        val formattedMessage = String.format(Config.getAddViewerSuccessMessage(), playerToAdd.name)
-        sender.sendMessage(formattedMessage, true)
+        sender.sendColoredFormattedMessage(Config.getAddViewerSuccessMessage(), playerToAdd.name)
         return true
     }
 }
@@ -152,8 +148,7 @@ class RemoveCommand : BasicCommand<Player>(
         playersWithBreadcrumbs[sender.uniqueId]?.forEach {
             it.removeViewer(playerToRemove.uniqueId)
         }
-        val formattedMessage = String.format(Config.getRemoveViewerSuccessMessage(), playerToRemove.name)
-        sender.sendMessage(formattedMessage, true)
+        sender.sendColoredFormattedMessage(Config.getRemoveViewerSuccessMessage(), playerToRemove.name)
         return true
     }
 }
