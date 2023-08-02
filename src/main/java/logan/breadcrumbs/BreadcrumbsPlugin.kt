@@ -150,14 +150,6 @@ class BreadcrumbsPlugin : JavaPlugin() {
      */
     private fun startBreadcrumbVisibilityUpdater() {
         Bukkit.getScheduler().runTaskTimer(this, {
-            for (entry in playersWithBreadcrumbs.entries) {
-                for (onlinePlayer in Bukkit.getOnlinePlayers()) {
-                    for (nearbyBreadcrumb in onlinePlayer.nearbyBreadcrumbs(entry.value, Config.getViewDistance())) {
-                        nearbyBreadcrumb.addViewerOfNotAlreadyViewing(onlinePlayer.uniqueId)
-                    }
-                }
-            }
-
             updateBreadcrumbsVisibility()
         }, 20, 20)
     }
