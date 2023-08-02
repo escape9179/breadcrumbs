@@ -18,10 +18,12 @@ class BreadcrumbsCommand : BasicCommand<CommandSender>(
     override fun run(sender: CommandSender, args: Array<out String>, data: Any?): Boolean {
         sender.sendMessage(
             """
-            &eBreadcrumbs v1.1
+            &eBreadcrumbs v1.3
             &e/breadcrumbs reload &f- Reload config.
             &e/breadcrumbs toggle &f- Toggles breadcrumbs on or off.
             &e/breadcrumbs color <(r g b) | #hex | 0xhex> &f- Set the color of your breadcrumbs.
+            &e/breadcrumbs add <player> &f- Add a player as a viewer of your breadcrumbs.
+            &e/breadcrumbs remove <player> &f- Remove a player as a viewer of your breadcrumbs.
         """.trimIndent(), true
         )
         return true
